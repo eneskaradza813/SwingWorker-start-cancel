@@ -1,10 +1,15 @@
 package jprogressbar;
 
 import java.awt.FlowLayout;
+import java.util.Hashtable;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.JSlider;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class Main {
 
@@ -14,33 +19,28 @@ public class Main {
         JFrame frame = new JFrame();
         frame.setLayout(new FlowLayout());
         
-        JProgressBar jbp = new JProgressBar();
-        frame.add(jbp);
+        JSlider jsl = new JSlider(0, 1000, 1000);
+        frame.add(jsl);
+        jsl.setMajorTickSpacing(100);
+        jsl.setMinorTickSpacing(25);
+        jsl.setPaintTicks(true);
+        jsl.setPaintLabels(true);
+        Hashtable<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
+        labels.put(0, new JLabel("Start"));
+        labels.put(500, new JLabel("Middle"));
+        labels.put(1000, new JLabel("End"));
+        jsl.setLabelTable(labels);
+        jsl.setPaintLabels(true);
         
-        SwingWorker sw = new SwingWorker() {
+        
+        jsl.addChangeListener(new ChangeListener() {
             @Override
-            protected Object doInBackground() throws Exception {
-                while(jbp.getValue()<jbp.getMaximum())
-                {
-                    int currValue = jbp.getValue();
-                    jbp.setValue(currValue + 1);
-                    jbp.setString("I am far from the end");
-                    jbp.setValue(currValue + 1);
-                    if(currValue>jbp.getMaximum()/3)
-                        jbp.setString("I am closer now...");
-                    if(currValue>(jbp.getMaximum()/3)*2)
-                        jbp.setString("Just about finish...");
-                    Thread.sleep(100);
-                    
-                }
-                JOptionPane.showMessageDialog(jbp, "Job done");
-                return null;
+            public void stateChanged(ChangeEvent e) {
+                System.out.println(((JSlider)e.getSource()).getValue());
             }
-        };
-        sw.execute();
-        jbp.setBorderPainted(false);
-        jbp.setStringPainted(true);
-        jbp.setIndeterminate(true);
+        });
+        
+        jsl.setOrientation(JSlider.VERTICAL);
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
